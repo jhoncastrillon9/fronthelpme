@@ -17,7 +17,8 @@ const Map = withGoogleMap((props) => {
     const { latLng } = event;
     const lat = latLng.lat();
     const lng = latLng.lng();
-    console.log('Setea el valor');
+
+
     setSelectedLocation({ lat, lng });
     selectedLocation1 = {lat, lng};
 
@@ -57,9 +58,8 @@ const Home = () => {
   const handleSaveCase = async () => {
     setError('');
     //Muestra en consola el valor de lat e lng de punto en el mapa
-    console.log('va a guardar');
-    console.log(selectedLocation1.lat);
-    console.log(selectedLocation1.lng);
+    console.log('va a guardar lat'+selectedLocation1.lat+'lng '+selectedLocation1.lng);
+    
     try {
       
       if (!description) {
@@ -71,10 +71,10 @@ const Home = () => {
         return;
       }
 
-      const response = await axios.post('/casos', {
+      const response = await axios.post('http://localhost:8080/casos', {
         descripcion: description,
-        latitud: Map.selectedLocation.lat,
-        longitud: Map.selectedLocation.lng
+        latitud: selectedLocation1.lat,
+        longitud: selectedLocation1.lng
       });
 
       // Verificar la respuesta del servidor
@@ -102,7 +102,7 @@ const Home = () => {
       <br />
       <textarea value={description} onChange={handleDescriptionChange} />
       <br />
-      <br />
+      
       <button onClick={handleSaveCase}>Guardar Caso</button>
       {error && <p>{error}</p>}
     </div>
