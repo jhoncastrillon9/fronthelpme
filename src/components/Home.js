@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
 
-const Map = withGoogleMap(({ selectedLocation, setSelectedLocation }) => {
+const Map = withGoogleMap(({ selectedLocation, setSelectedLocation, elements }) => {
+
   const handleMarkerClick = (marker) => {
     // Lógica para manejar el clic en el marcador
     console.log('Marcador clicado:', marker);
@@ -19,11 +20,21 @@ const Map = withGoogleMap(({ selectedLocation, setSelectedLocation }) => {
   return (
     <div>
       <h1>Mapa de Google</h1>
+
       <GoogleMap
         defaultZoom={10}
         defaultCenter={{ lat: 6.244203, lng: -75.581211 }}
         onClick={handleMapClick}
       >
+        {/* Marcadores para cada objeto en "elements" */}
+        {elements.map((element, index) => (
+          <Marker
+            key={index}
+            position={{ lat: element.latitud, lng: element.longitud }}
+            onClick={() => handleMarkerClick(`Marcador ${index + 1}`)}
+          />
+        ))}
+        
         {/* Marcador en una ubicación específica */}
         {selectedLocation && (
           <Marker
@@ -36,14 +47,14 @@ const Map = withGoogleMap(({ selectedLocation, setSelectedLocation }) => {
   );
 });
 
-const Home = () => {
+const Home = (props) => {  
   const [description, setDescription] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [eventType, setEventType] = useState('');
   const [error, setError] = useState('');
-
+console.log('userId: '+props.userId)
   const handleDescriptionChange = (event) => {
     setDescription(event.target.value);
   };
@@ -92,6 +103,7 @@ const Home = () => {
         longitud: selectedLocation.lng,
         fechaHora: fechaHora,
         delito: eventType,
+        usuarioId: props.userId
       });
 
       if (response.status === 201) {
@@ -110,6 +122,7 @@ const Home = () => {
       <h1>Home</h1>
       <Map
         selectedLocation={selectedLocation}
+        elements={props.elementos}
         setSelectedLocation={setSelectedLocation}
         containerElement={<div style={{ height: '400px', width: '100%' }} />}
         mapElement={<div style={{ height: '100%' }} />}
