@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
-var selectedLocation1 = null;
 
-
-
-const Map = withGoogleMap((props) => {
-  const [selectedLocation, setSelectedLocation] = useState(null);
-
+const Map = withGoogleMap(({ selectedLocation, setSelectedLocation }) => {
   const handleMarkerClick = (marker) => {
     // Lógica para manejar el clic en el marcador
     console.log('Marcador clicado:', marker);
@@ -18,13 +13,7 @@ const Map = withGoogleMap((props) => {
     const lat = latLng.lat();
     const lng = latLng.lng();
 
-
     setSelectedLocation({ lat, lng });
-    selectedLocation1 = {lat, lng};
-
-    
-
-
   };
 
   return (
@@ -32,7 +21,7 @@ const Map = withGoogleMap((props) => {
       <h1>Mapa de Google</h1>
       <GoogleMap
         defaultZoom={10}
-        defaultCenter={{ lat: 6.244203, lng: -75.581211  }} // Coordenadas de San Francisco por defecto
+        defaultCenter={{ lat: 6.244203, lng: -75.581211 }}
         onClick={handleMapClick}
       >
         {/* Marcador en una ubicación específica */}
@@ -49,37 +38,63 @@ const Map = withGoogleMap((props) => {
 
 const Home = () => {
   const [description, setDescription] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [eventType, setEventType] = useState('');
   const [error, setError] = useState('');
 
   const handleDescriptionChange = (event) => {
     setDescription(event.target.value);
   };
 
+  const handleDateChange = (event) => {
+    setDate(event.target.value);
+  };
+
+  const handleTimeChange = (event) => {
+    setTime(event.target.value);
+  };
+
+  const handleEventTypeChange = (event) => {
+    setEventType(event.target.value);
+  };
+
   const handleSaveCase = async () => {
     setError('');
-    //Muestra en consola el valor de lat e lng de punto en el mapa
-    console.log('va a guardar lat'+selectedLocation1.lat+'lng '+selectedLocation1.lng);
-    
+
+    if (!description) {
+      setError('Ingrese una descripción para el caso.');
+      return;
+    }
+
+    if (selectedLocation === null) {
+      setError('Seleccione una ubicación en el mapa.');
+      return;
+    }
+
+    if (!date || !time) {
+      setError('Seleccione una fecha y hora para el caso.');
+      return;
+    }
+
+    if (!eventType) {
+      setError('Seleccione un tipo de evento para el caso.');
+      return;
+    }
+
     try {
-      
-      if (!description) {
-        setError('Ingrese una descripción para el caso.');
-        return;
-      }
-      if (selectedLocation1==null) {
-        setError('Seleccione una ubicación en el mapa.');
-        return;
-      }
+      const fechaHora = `${date}T${time}`;
 
       const response = await axios.post('http://localhost:8080/casos', {
         descripcion: description,
-        latitud: selectedLocation1.lat,
-        longitud: selectedLocation1.lng
+        latitud: selectedLocation.lat,
+        longitud: selectedLocation.lng,
+        fechaHora: fechaHora,
+        delito: eventType,
       });
 
-      // Verificar la respuesta del servidor
       if (response.status === 201) {
-        // Caso creado exitosamente
         console.log('Caso creado exitosamente');
       } else {
         setError('Error al crear el caso');
@@ -94,15 +109,40 @@ const Home = () => {
     <div>
       <h1>Home</h1>
       <Map
+        selectedLocation={selectedLocation}
+        setSelectedLocation={setSelectedLocation}
         containerElement={<div style={{ height: '400px', width: '100%' }} />}
         mapElement={<div style={{ height: '100%' }} />}
       />
-      <br /><br /><br /><br />
+      <br />
+      <br />
+      <br />
       <label>Descripción:</label>
       <br />
       <textarea value={description} onChange={handleDescriptionChange} />
       <br />
-      
+      <label>Fecha:</label>
+      <br />
+      <input type="date" value={date} onChange={handleDateChange} />
+      <br />
+      <label>Hora:</label>
+      <br />
+      <input type="time" value={time} onChange={handleTimeChange} />
+      <br />
+      <br />
+      <label>Tipo de Evento:</label>
+      <br />
+      <select value={eventType} onChange={handleEventTypeChange}>
+        <option value="">Seleccione un tipo de evento</option>
+        <option value="Robo">Robo</option>
+        <option value="Agresión">Agresión</option>
+        <option value="Violación">Violación</option>
+        <option value="Altercado">Altercado</option>
+        <option value="Otro">Otro</option>
+      </select>
+      <br />
+      <br />
+      <br />
       <button onClick={handleSaveCase}>Guardar Caso</button>
       {error && <p>{error}</p>}
     </div>
