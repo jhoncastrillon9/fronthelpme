@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Home from './Home'
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [authenticated, setAuthenticated] = useState(false);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -19,7 +21,7 @@ const Login = () => {
       // Verificar la respuesta del servidor
       if (response.status === 200) {
         // Autenticación exitosa
-        console.log('Autenticación exitosa');
+        setAuthenticated(true);
       } else {
         // Autenticación fallida
         setError('Credenciales inválidas');
@@ -61,6 +63,10 @@ const Login = () => {
     setPassword(event.target.value);
   };
 
+  if (authenticated) {
+    return <Home />;
+  }
+
   return (
     <div>
       <h1>Login</h1>
@@ -72,17 +78,7 @@ const Login = () => {
         <input type="password" value={password} onChange={handlePasswordChange} />
         <br />
         <button type="submit">Login</button>
-      </form>
-
-      <form onSubmit={handleRegistration}>
-        <h2>Registrarse</h2>
-        <label>Username:</label>
-        <input type="text" value={username} onChange={handleUsernameChange} />
-        <br />
-        <label>Password:</label>
-        <input type="password" value={password} onChange={handlePasswordChange} />
-        <br />
-        <button type="submit">Registrarse</button>
+        <button onClick={handleRegistration}>Registrarse</button>
       </form>
 
       {error && <p>{error}</p>}

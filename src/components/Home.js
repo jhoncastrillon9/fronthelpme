@@ -1,65 +1,110 @@
 import React, { useState } from 'react';
-import { GoogleMap, Marker, InfoWindow } from 'react-google-maps';
+import axios from 'axios';
+import { withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
+var selectedLocation1 = null;
 
-const Home = () => {
-  const [selectedMarker, setSelectedMarker] = useState(null);
-  const [description, setDescription] = useState('');
+
+
+const Map = withGoogleMap((props) => {
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   const handleMarkerClick = (marker) => {
-    setSelectedMarker(marker);
+    // Lógica para manejar el clic en el marcador
+    console.log('Marcador clicado:', marker);
   };
 
   const handleMapClick = (event) => {
     const { latLng } = event;
     const lat = latLng.lat();
     const lng = latLng.lng();
-    // Aquí puedes guardar la ubicación seleccionada en el backend
-    console.log('Latitud:', lat);
-    console.log('Longitud:', lng);
-  };
+    console.log('Setea el valor');
+    setSelectedLocation({ lat, lng });
+    selectedLocation1 = {lat, lng};
 
-  const handleDescriptionChange = (event) => {
-    setDescription(event.target.value);
-  };
+    
 
-  const handleSaveDescription = () => {
-    // Aquí puedes enviar la descripción al backend utilizando axios o fetch
-    console.log('Descripción:', description);
+
   };
 
   return (
     <div>
       <h1>Mapa de Google</h1>
       <GoogleMap
-        onClick={handleMapClick}
         defaultZoom={10}
-        defaultCenter={{ lat: 37.7749, lng: -122.4194 }} // Coordenadas de San Francisco por defecto
+        defaultCenter={{ lat: 6.244203, lng: -75.581211  }} // Coordenadas de San Francisco por defecto
+        onClick={handleMapClick}
       >
-        {selectedMarker && (
-          <InfoWindow
-            position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
-            onCloseClick={() => setSelectedMarker(null)}
-          >
-            <div>
-              <p>Latitud: {selectedMarker.lat}</p>
-              <p>Longitud: {selectedMarker.lng}</p>
-              <textarea
-                value={description}
-                onChange={handleDescriptionChange}
-                placeholder="Ingrese una descripción..."
-              ></textarea>
-              <button onClick={handleSaveDescription}>Guardar Descripción</button>
-            </div>
-          </InfoWindow>
-        )}
-        {/* Marcador para la ubicación seleccionada */}
-        {selectedMarker && (
+        {/* Marcador en una ubicación específica */}
+        {selectedLocation && (
           <Marker
-            position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
-            onClick={() => handleMarkerClick(selectedMarker)}
+            position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
+            onClick={() => handleMarkerClick('Marcador 1')}
           />
         )}
       </GoogleMap>
+    </div>
+  );
+});
+
+const Home = () => {
+  const [description, setDescription] = useState('');
+  const [error, setError] = useState('');
+
+  const handleDescriptionChange = (event) => {
+    setDescription(event.target.value);
+  };
+
+  const handleSaveCase = async () => {
+    setError('');
+    //Muestra en consola el valor de lat e lng de punto en el mapa
+    console.log('va a guardar');
+    console.log(selectedLocation1.lat);
+    console.log(selectedLocation1.lng);
+    try {
+      
+      if (!description) {
+        setError('Ingrese una descripción para el caso.');
+        return;
+      }
+      if (selectedLocation1==null) {
+        setError('Seleccione una ubicación en el mapa.');
+        return;
+      }
+
+      const response = await axios.post('/casos', {
+        descripcion: description,
+        latitud: Map.selectedLocation.lat,
+        longitud: Map.selectedLocation.lng
+      });
+
+      // Verificar la respuesta del servidor
+      if (response.status === 201) {
+        // Caso creado exitosamente
+        console.log('Caso creado exitosamente');
+      } else {
+        setError('Error al crear el caso');
+      }
+    } catch (error) {
+      console.log(error);
+      setError('Error en el servidor');
+    }
+  };
+
+  return (
+    <div>
+      <h1>Home</h1>
+      <Map
+        containerElement={<div style={{ height: '400px', width: '100%' }} />}
+        mapElement={<div style={{ height: '100%' }} />}
+      />
+      <br /><br /><br /><br />
+      <label>Descripción:</label>
+      <br />
+      <textarea value={description} onChange={handleDescriptionChange} />
+      <br />
+      <br />
+      <button onClick={handleSaveCase}>Guardar Caso</button>
+      {error && <p>{error}</p>}
     </div>
   );
 };
