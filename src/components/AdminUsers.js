@@ -85,76 +85,100 @@ const AdminUsers = () => {
       console.log('handleInputChange');
       console.log(editedUsuario);
   
-    return (
-      <div>
-         <Menu isAdmin={true}></Menu>
-        <h2>Usuarios</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Contraseña</th>
-              <th>Admin</th>
-              <th>Acciones</th>
+      return (
+    <div>
+ <Menu isAdmin={true}></Menu>
+
+
+
+ <div className="container">
+    <div className="text-center">
+      <h2>Usuarios</h2>
+      <table className="table">
+        <thead className="thead-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Contraseña</th>
+            <th>Admin</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {usuarios.map((usuario) => (
+            <tr key={usuario.id}>
+              <td>{usuario.id}</td>
+              <td>{usuario.nombre}</td>
+              <td>{usuario.contraseña}</td>
+              <td>{usuario.isAdmin.toString()}</td>
+              <td>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => cargarUsuarioParaEditar(usuario.id)}
+                >
+                  Editar
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {usuarios.map((usuario) => (
-              <tr key={usuario.id}>
-                <td>{usuario.id}</td>
-                <td>{usuario.nombre}</td>
-                <td>{usuario.contraseña}</td>
-                <td>{usuario.isAdmin.toString()}</td>
-                <td>
-                  <button onClick={() => cargarUsuarioParaEditar(usuario.id)}>
-                    Editar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-  
-        <h2>Editar Usuario</h2>
-        <form>
-          <label>
-            Nombre:
-            <input
-              type="text"
-              name="nombre"
-              value={editedUsuario.nombre}
-              onChange={handleInputChange}
-            />
-          </label>
-          <br />
-          <label>
-            Contraseña:
-            <input
-              type="password"
-              name="contraseña"
-              value={editedUsuario.contraseña}
-              onChange={handleInputChange}
-            />
-          </label>
-          <br />
-          <label>
-            Admin:
-            <input
-              type="checkbox"
-              name="isAdmin"
-              checked={editedUsuario.isAdmin}
-              onChange={handleInputChange}
-            />
-          </label>
-          <br />
-          <button type="button" onClick={guardarUsuarioEditado}>Guardar</button>
-          <button type="button" onClick={limpiarFormulario}>
-            Cancelar
-          </button>
-        </form>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div className="text-center">
+      <h2>Crear / Editar Usuario</h2>
+      <div className="card">
+        <div className="card-body">
+          <form>
+            <div className="form-group">
+              <label>Nombre:</label>
+              <input
+                className="form-control"
+                type="text"
+                name="nombre"
+                value={editedUsuario.nombre}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Contraseña:</label>
+              <input
+                className="form-control"
+                type="password"
+                name="contraseña"
+                value={editedUsuario.contraseña}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="form-group form-check" style={{ display: "inline-block"}}>
+              <input
+                className="form-check-input"
+                type="checkbox"
+                name="isAdmin"
+                checked={editedUsuario.isAdmin}
+                onChange={handleInputChange}
+              />
+              <label className="form-check-label">Admin</label>
+            </div>
+            <div className="text-center">
+              <button className="btn" style={{ backgroundColor: "#7d48b1", color: "white", marginRight: "5px"}} type="button" onClick={guardarUsuarioEditado}>
+                Guardar
+              </button>
+              
+              <button className="btn" style={{ backgroundColor: "#ae48b1", color: "white" }} type="button" onClick={limpiarFormulario}>
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    );
+    </div>
+  </div>
+
+</div>
+      );
+
+    
   };
   
   export default AdminUsers;
