@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Home from './Home'
+import './login.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -79,28 +80,59 @@ const Login = () => {
   };
 
   if (authenticated) {    
-    return <Home elementos={elementos} userId={userId} isAdmin={isAdmin}/>;
+    return <Home setElementos={setElementos} elementos={elementos} userId={userId} isAdmin={isAdmin}/>;
   }
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleLogin}>
-        <label>Username:</label>
-        <input type="text" value={username} onChange={handleUsernameChange} />
-        <br />
-        <br />
-        <label>Password:</label>
-        <input type="password" value={password} onChange={handlePasswordChange} />
-        <br />
-        <br />
-        <button type="submit">Login</button>
-        <button onClick={handleRegistration}>Registrarse</button>
-      </form>
-
-      {error && <p>{error}</p>}
+    <div className="login-container">
+      <div className="login-box">
+        <h1 className="title" style={{ color: "#ae48b1" }}>
+          Login
+        </h1>
+        <h3 className="subtitle" style={{ color: "##7d48b1" }}>
+          helpMe
+        </h3>
+        <form onSubmit={handleLogin}>
+          <div className="form-group">
+            <label htmlFor="username" style={{ color: "#ae48b1" }}>
+              Username:
+            </label>
+            <input
+              type="text"
+              id="username"
+              className="form-control"
+              value={username}
+              onChange={handleUsernameChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password" style={{ color: "#ae48b1" }}>
+              Password:
+            </label>
+            <input
+              type="password"
+              id="password"
+              className="form-control"
+              value={password}
+              onChange={handlePasswordChange}
+            />
+          </div>
+          <div className="button-group">
+            <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#ae48b1" }}>
+              Login
+            </button>
+            <button onClick={handleRegistration} className="btn btn-secondary" style={{ backgroundColor: "##7d48b1" }}>
+              Registrarse
+            </button>
+          </div>
+        </form>
+    
+        {error && <p className="error-message" style={{ color: "#ae48b1" }}>{error}</p>}
+      </div>
     </div>
   );
+
+
 };
 
 export default Login;

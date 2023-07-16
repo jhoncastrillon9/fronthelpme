@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Menu from './Menu';
 
 const AdminUsers = () => {
     const [usuarios, setUsuarios] = useState([]);
@@ -86,6 +87,7 @@ const AdminUsers = () => {
   
     return (
       <div>
+         <Menu isAdmin={true}></Menu>
         <h2>Usuarios</h2>
         <table>
           <thead>
