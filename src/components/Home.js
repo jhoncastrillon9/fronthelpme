@@ -26,7 +26,7 @@ const Map = withGoogleMap(({ selectedLocation, setSelectedLocation, elements }) 
   return (
   
     <div>
-      <h1>Registrar nuevo Caso</h1>
+     
 
       <GoogleMap
         defaultZoom={12}
@@ -79,6 +79,13 @@ const Home = (props) => {
     setTime(event.target.value);
   };
 
+  const cleanform = () => {
+    setDescription('');
+    setDate('');
+    setTime('');
+    setEventType('');
+  };
+
   const handleEventTypeChange = (event) => {
     setEventType(event.target.value);
   };
@@ -123,6 +130,7 @@ const Home = (props) => {
         setMsj('Caso Creado con exito');
         const updatedElements = [...props.elementos, response.data];
         props.setElementos(updatedElements);
+        cleanform();
 
 
       } else {
@@ -146,38 +154,46 @@ const Home = (props) => {
         containerElement={<div style={{ height: '400px', width: '100%' }} />}
         mapElement={<div style={{ height: '100%' }} />}
       />
-      <br />
-      <br />
-      <br />
-      <label>Descripción:</label>
-      <br />
-      <textarea value={description} onChange={handleDescriptionChange} />
-      <br />
-      <label>Fecha:</label>
-      <br />
-      <input type="date" value={date} onChange={handleDateChange} />
-      <br />
-      <label>Hora:</label>
-      <br />
-      <input type="time" value={time} onChange={handleTimeChange} />
-      <br />
-      <br />
-      <label>Tipo de Evento:</label>
-      <br />
-      <select value={eventType} onChange={handleEventTypeChange}>
-        <option value="">Seleccione un tipo de evento</option>
-        <option value="Robo">Robo</option>
-        <option value="Agresión">Agresión</option>
-        <option value="Violación">Violación</option>
-        <option value="Altercado">Altercado</option>
-        <option value="Otro">Otro</option>
-      </select>
-      <br />
-      <br />
-      <br />
-      <button onClick={handleSaveCase}>Guardar Caso</button>
-      {error && <p>{error}</p>}
-      {msj && <p>{msj}</p>}
+      <br></br>
+        <h3>Registrar nuevo Caso</h3>        
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '45vh' }}>
+
+            <div className="login-box">
+                <br />
+
+                <form>
+              <div className="form-group">
+                <label className="text-primary">Descripción:</label>
+                <textarea value={description} onChange={handleDescriptionChange} className="form-control" style={{ borderColor: "#7d48b1" }} />
+              </div>        
+              <div className="form-row">          
+                  <div className="form-group col-md-6">
+                      <label className="text-primary">Fecha:</label>
+                      <input type="date" value={date} onChange={handleDateChange} className="form-control" style={{ borderColor: "#7d48b1" }} />
+                  </div>
+      
+                  <div className="form-group col-md-6">
+                      <label className="text-primary">Hora:</label>
+                      <input type="time" value={time} onChange={handleTimeChange} className="form-control" style={{ borderColor: "#7d48b1" }} />
+                  </div>
+              </div>
+              <div className="form-group">
+                  <label className="text-primary">Tipo de Evento:</label>
+                  <select value={eventType} onChange={handleEventTypeChange} className="form-control" style={{ borderColor: "#7d48b1" }}>
+                    <option value="">Seleccione un tipo de evento</option>
+                    <option value="Robo">Robo</option>
+                    <option value="Agresión">Agresión</option>
+                    <option value="Violación">Violación</option>
+                    <option value="Altercado">Altercado</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+              </div>
+              <p onClick={handleSaveCase} className="btn btn-primary">Guardar Caso</p>    
+              </form>            
+                {error && <p>{error}</p>}
+                {msj && <p>{msj}</p>}
+            </div>   
+        </div>    
     </div>
   );
 };
