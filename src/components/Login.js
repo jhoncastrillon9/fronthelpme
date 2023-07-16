@@ -9,6 +9,8 @@ const Login = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [elementos, setElementos] = useState([]);
   const [userId, setUserId] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+
 
 
   const handleLogin = async (event) => {
@@ -18,14 +20,17 @@ const Login = () => {
     try {
       const response = await axios.post('http://localhost:8080/login', {
         nombre: username,
-        contraseña: password
+        contraseña: password,
+        isAdmin: false
       });
 
       // Verificar la respuesta del servidor
       if (response.status === 200) {
         // Autenticación exitosa
         setElementos(response.data.casos);
-        setUserId(response.data.id);        
+        setUserId(response.data.id);  
+        setIsAdmin(response.data.isAdmin);        
+
         console.log('Autenticación exitosa');   
 
         setAuthenticated(true);
@@ -44,9 +49,10 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('/usuarios', {
-        username: username,
-        password
+      const response = await axios.post('http://localhost:8080/usuarios', {
+        nombre: username,
+        contraseña: password,
+        isAdmin: false
       });
 
       // Verificar la respuesta del servidor
@@ -71,9 +77,9 @@ const Login = () => {
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
-console.log('Login userId' + userId);
+
   if (authenticated) {    
-    return <Home elementos={elementos} userId={userId} />;
+    return <Home elementos={elementos} userId={userId} isAdmin={isAdmin}/>;
   }
 
   return (
@@ -83,8 +89,10 @@ console.log('Login userId' + userId);
         <label>Username:</label>
         <input type="text" value={username} onChange={handleUsernameChange} />
         <br />
+        <br />
         <label>Password:</label>
         <input type="password" value={password} onChange={handlePasswordChange} />
+        <br />
         <br />
         <button type="submit">Login</button>
         <button onClick={handleRegistration}>Registrarse</button>

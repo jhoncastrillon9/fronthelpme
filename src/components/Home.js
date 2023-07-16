@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
+import Menu from './Menu';
 
 const Map = withGoogleMap(({ selectedLocation, setSelectedLocation, elements }) => {
 
@@ -17,31 +18,40 @@ const Map = withGoogleMap(({ selectedLocation, setSelectedLocation, elements }) 
     setSelectedLocation({ lat, lng });
   };
 
+  const handleMapUnmount = () => {
+    setSelectedLocation(null);
+    console.log('handleMapUnmount');
+  };
+
   return (
+  
     <div>
-      <h1>Mapa de Google</h1>
+      <h1>Registrar nuevo Caso</h1>
 
       <GoogleMap
-        defaultZoom={10}
+        defaultZoom={12}
         defaultCenter={{ lat: 6.244203, lng: -75.581211 }}
         onClick={handleMapClick}
+        onUnmount={handleMapUnmount}
       >
         {/* Marcadores para cada objeto en "elements" */}
         {elements.map((element, index) => (
           <Marker
-            key={index}
+            key={element.id}
             position={{ lat: element.latitud, lng: element.longitud }}
-            onClick={() => handleMarkerClick(`Marcador ${index + 1}`)}
+            onClick={() => handleMarkerClick(`Marcador ${element.id}`)}
+           
           />
-        ))}
+        ))}     
         
-        {/* Marcador en una ubicación específica */}
+                 {/* Marcador en una ubicación específica */}
         {selectedLocation && (
           <Marker
             position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
             onClick={() => handleMarkerClick('Marcador 1')}
           />
         )}
+
       </GoogleMap>
     </div>
   );
@@ -54,7 +64,9 @@ const Home = (props) => {
   const [time, setTime] = useState('');
   const [eventType, setEventType] = useState('');
   const [error, setError] = useState('');
-console.log('userId: '+props.userId)
+  const [msj, setMsj] = useState('');
+
+
   const handleDescriptionChange = (event) => {
     setDescription(event.target.value);
   };
@@ -108,6 +120,11 @@ console.log('userId: '+props.userId)
 
       if (response.status === 201) {
         console.log('Caso creado exitosamente');
+        setMsj('Caso Creado con exito');
+        const updatedElements = [...props.elementos, response.data];
+        props.setElementos(updatedElements);
+
+
       } else {
         setError('Error al crear el caso');
       }
@@ -119,7 +136,9 @@ console.log('userId: '+props.userId)
 
   return (
     <div>
-      <h1>Home</h1>
+      <Menu isAdmin={props.isAdmin}></Menu>
+
+      <h1>Mis Casos</h1>
       <Map
         selectedLocation={selectedLocation}
         elements={props.elementos}
@@ -158,6 +177,7 @@ console.log('userId: '+props.userId)
       <br />
       <button onClick={handleSaveCase}>Guardar Caso</button>
       {error && <p>{error}</p>}
+      {msj && <p>{msj}</p>}
     </div>
   );
 };
